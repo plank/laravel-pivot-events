@@ -1,6 +1,6 @@
 <?php
 
-namespace GeneaLabs\LaravelPivotEvents\Tests\Models;
+namespace Plank\LaravelPivotEvents\Tests\Models;
 
 class Role extends BaseModel
 {

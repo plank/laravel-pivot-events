@@ -1,12 +1,12 @@
 <?php
 
-namespace GeneaLabs\LaravelPivotEvents\Tests;
+namespace Plank\LaravelPivotEvents\Tests;
 
-use GeneaLabs\LaravelPivotEvents\Tests\Models\User;
+use Plank\LaravelPivotEvents\Tests\Models\User;
 
 class ObservableEventsTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
     }

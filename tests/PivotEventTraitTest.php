@@ -1,15 +1,17 @@
-<?php namespace GeneaLabs\LaravelPivotEvents\Tests;
+<?php
 
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Tag;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Post;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Role;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\User;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Video;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Seller;
+namespace Plank\LaravelPivotEvents\Tests;
+
+use Plank\LaravelPivotEvents\Tests\Models\Post;
+use Plank\LaravelPivotEvents\Tests\Models\Role;
+use Plank\LaravelPivotEvents\Tests\Models\Seller;
+use Plank\LaravelPivotEvents\Tests\Models\Tag;
+use Plank\LaravelPivotEvents\Tests\Models\User;
+use Plank\LaravelPivotEvents\Tests\Models\Video;
 
 class PivotEventTraitTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
     }
@@ -474,12 +476,8 @@ class PivotEventTraitTest extends TestCase
         $this->startListening();
         $user->update(['name' => 'different']);
 
-        $this->check_events([
-            'eloquent.saving: '.User::class,
-            'eloquent.updating: '.User::class,
-            'eloquent.updated: '.User::class,
-            'eloquent.saved: '.User::class,
-        ]);
+        // We shouldn't be listening to update events
+        $this->assertEmpty(self::$events);
     }
 
     public function test_relation_is_null()
@@ -488,8 +486,8 @@ class PivotEventTraitTest extends TestCase
         $user = User::find(1);
         $user->update(['name' => 'new_name']);
 
-        $eventName = 'eloquent.updating: '.User::class;
-        $this->check_variables(0, [], [], null);
+        // We shouldn't be listening to update events
+        $this->assertEmpty(self::$events);
     }
 
     private function check_events($events)
@@ -497,7 +495,7 @@ class PivotEventTraitTest extends TestCase
         $i = 0;
         foreach ($events as $event) {
             $this->assertEquals(self::$events[$i]['name'], $event);
-            ++$i;
+            $i++;
         }
         $this->assertEquals(count($events), count(self::$events));
     }

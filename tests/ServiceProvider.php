@@ -1,10 +1,12 @@
-<?php namespace GeneaLabs\LaravelPivotEvents\Tests;
+<?php
+
+namespace Plank\LaravelPivotEvents\Tests;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     public function register()
     {
-        //register
+        // register
     }
 
     public function boot()

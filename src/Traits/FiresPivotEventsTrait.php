@@ -1,21 +1,24 @@
-<?php namespace GeneaLabs\LaravelPivotEvents\Traits;
+<?php
 
-use Illuminate\Database\Eloquent\Model;
+namespace Plank\LaravelPivotEvents\Traits;
+
+use Illuminate\Contracts\Broadcasting\Factory as BroadcastingFactory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 trait FiresPivotEventsTrait
 {
     /**
      * Sync the intermediate tables with a list of IDs or collection of models.
      *
-     * @param mixed $ids
-     * @param bool $detaching
-     *
+     * @param  mixed  $ids
+     * @param  bool  $detaching
      * @return array
      */
     public function sync($ids, $detaching = true)
     {
-        if (false === $this->parent->fireModelEvent('pivotSyncing', true, $this->getRelationName())) {
+        if ($this->parent->firePivotEvent('pivotSyncing', true, $this->getRelationName()) === false) {
             return false;
         }
 
@@ -24,7 +27,7 @@ trait FiresPivotEventsTrait
             $parentResult = parent::sync($ids, $detaching);
         });
 
-        $this->parent->fireModelEvent('pivotSynced', false, $this->getRelationName(), $parentResult);
+        $this->parent->firePivotEvent('pivotSynced', false, $this->getRelationName(), $parentResult);
 
         return $parentResult;
     }
@@ -32,17 +35,16 @@ trait FiresPivotEventsTrait
     /**
      * Attach a model to the parent.
      *
-     * @param mixed $id
-     * @param array $attributes
-     * @param bool  $touch
+     * @param  mixed  $id
+     * @param  bool  $touch
      */
     public function attach($ids, array $attributes = [], $touch = true)
     {
-        list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($ids, $attributes);
+        [$idsOnly, $idsAttributes] = $this->getIdsWithAttributes($ids, $attributes);
 
-        $this->parent->fireModelEvent('pivotAttaching', true, $this->getRelationName(), $idsOnly, $idsAttributes);
+        $this->parent->firePivotEvent('pivotAttaching', true, $this->getRelationName(), $idsOnly, $idsAttributes);
         $parentResult = parent::attach($ids, $attributes, $touch);
-        $this->parent->fireModelEvent('pivotAttached', false, $this->getRelationName(), $idsOnly, $idsAttributes);
+        $this->parent->firePivotEvent('pivotAttached', false, $this->getRelationName(), $idsOnly, $idsAttributes);
 
         return $parentResult;
     }
@@ -50,9 +52,8 @@ trait FiresPivotEventsTrait
     /**
      * Detach models from the relationship.
      *
-     * @param mixed $ids
-     * @param bool  $touch
-     *
+     * @param  mixed  $ids
+     * @param  bool  $touch
      * @return int
      */
     public function detach($ids = null, $touch = true)
@@ -61,11 +62,11 @@ trait FiresPivotEventsTrait
             $ids = $this->query->pluck($this->query->qualifyColumn($this->relatedKey))->toArray();
         }
 
-        list($idsOnly) = $this->getIdsWithAttributes($ids);
+        [$idsOnly] = $this->getIdsWithAttributes($ids);
 
-        $this->parent->fireModelEvent('pivotDetaching', true, $this->getRelationName(), $idsOnly);
+        $this->parent->firePivotEvent('pivotDetaching', true, $this->getRelationName(), $idsOnly);
         $parentResult = parent::detach($ids, $touch);
-        $this->parent->fireModelEvent('pivotDetached', false, $this->getRelationName(), $idsOnly);
+        $this->parent->firePivotEvent('pivotDetached', false, $this->getRelationName(), $idsOnly);
 
         return $parentResult;
     }
@@ -73,19 +74,17 @@ trait FiresPivotEventsTrait
     /**
      * Update an existing pivot record on the table.
      *
-     * @param mixed $id
-     * @param array $attributes
-     * @param bool  $touch
-     *
+     * @param  mixed  $id
+     * @param  bool  $touch
      * @return int
      */
     public function updateExistingPivot($id, array $attributes, $touch = true)
     {
-        list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($id, $attributes);
+        [$idsOnly, $idsAttributes] = $this->getIdsWithAttributes($id, $attributes);
 
-        $this->parent->fireModelEvent('pivotUpdating', true, $this->getRelationName(), $idsOnly, $idsAttributes);
+        $this->parent->firePivotEvent('pivotUpdating', true, $this->getRelationName(), $idsOnly, $idsAttributes);
         $parentResult = parent::updateExistingPivot($id, $attributes, $touch);
-        $this->parent->fireModelEvent('pivotUpdated', false, $this->getRelationName(), $idsOnly, $idsAttributes);
+        $this->parent->firePivotEvent('pivotUpdated', false, $this->getRelationName(), $idsOnly, $idsAttributes);
 
         return $parentResult;
     }
@@ -94,9 +93,8 @@ trait FiresPivotEventsTrait
      * Cleans the ids and ids with attributes
      * Returns an array with and array of ids and array of id => attributes.
      *
-     * @param mixed $id
-     * @param array $attributes
-     *
+     * @param  mixed  $id
+     * @param  array  $attributes
      * @return array
      */
     private function getIdsWithAttributes($id, $attributes = [])
@@ -124,5 +122,86 @@ trait FiresPivotEventsTrait
         $idsOnly = array_keys($ids);
 
         return [$idsOnly, $ids];
+    }
+
+    /**
+     * Fire the given event for the model.
+     *
+     * @param  string  $event
+     * @param  bool  $halt
+     * @return mixed
+     */
+    public function firePivotEvent(
+        $event,
+        $halt = true,
+        $relationName = null,
+        $ids = [],
+        $idsAttributes = []
+    ) {
+        if (! isset(static::$dispatcher)) {
+            return true;
+        }
+
+        $method = $halt
+            ? 'until'
+            : 'dispatch';
+
+        $result = $this->filterModelEventResults(
+            $this->fireCustomModelEvent($event, $method)
+        );
+
+        if ($result === false) {
+            return false;
+        }
+
+        $payload = [
+            'model' => $this,
+            'relation' => $relationName,
+            'pivotIds' => $ids,
+            'pivotIdsAttributes' => $idsAttributes,
+            0 => $this,
+        ];
+        $result = $result
+            ?: static::$dispatcher
+                ->{$method}("eloquent.{$event}: ".static::class, $payload);
+        $this->broadcastPivotEvent($event, $payload);
+
+        return $result;
+    }
+
+    protected function broadcastPivotEvent(string $event, array $payload): void
+    {
+        $events = [
+            'pivotAttached',
+            'pivotDetached',
+            'pivotSynced',
+            'pivotUpdated',
+        ];
+
+        if (! in_array($event, $events)) {
+            return;
+        }
+
+        $className = explode('\\', get_class($this));
+        $name = method_exists($this, 'broadcastAs')
+                ? $this->broadcastAs()
+                : array_pop($className).ucwords($event);
+        $channels = method_exists($this, 'broadcastOn')
+            ? Arr::wrap($this->broadcastOn($event))
+            : [];
+
+        if (empty($channels)) {
+            return;
+        }
+
+        $connections = method_exists($this, 'broadcastConnections')
+            ? $this->broadcastConnections()
+            : [null];
+        $manager = app(BroadcastingFactory::class);
+
+        foreach ($connections as $connection) {
+            $manager->connection($connection)
+                ->broadcast($channels, $name, $payload);
+        }
     }
 }

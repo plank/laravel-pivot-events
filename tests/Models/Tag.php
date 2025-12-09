@@ -1,8 +1,8 @@
 <?php
 
-namespace GeneaLabs\LaravelPivotEvents\Tests\Models;
+namespace Plank\LaravelPivotEvents\Tests\Models;
 
-use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
+use Plank\LaravelPivotEvents\Traits\PivotEventTrait;
 
 class Tag extends BaseModel
 {

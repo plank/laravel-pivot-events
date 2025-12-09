@@ -1,9 +1,11 @@
-<?php namespace GeneaLabs\LaravelPivotEvents\Traits;
+<?php
 
-use GeneaLabs\LaravelPivotEvents\Relations\BelongsToManyCustom;
-use GeneaLabs\LaravelPivotEvents\Relations\MorphToManyCustom;
+namespace Plank\LaravelPivotEvents\Traits;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Plank\LaravelPivotEvents\Relations\BelongsToManyCustom;
+use Plank\LaravelPivotEvents\Relations\MorphToManyCustom;
 
 trait ExtendRelationsTrait
 {

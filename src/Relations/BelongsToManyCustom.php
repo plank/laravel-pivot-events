@@ -1,7 +1,9 @@
-<?php namespace GeneaLabs\LaravelPivotEvents\Relations;
+<?php
 
-use GeneaLabs\LaravelPivotEvents\Traits\FiresPivotEventsTrait;
+namespace Plank\LaravelPivotEvents\Relations;
+
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Plank\LaravelPivotEvents\Traits\FiresPivotEventsTrait;
 
 class BelongsToManyCustom extends BelongsToMany
 {

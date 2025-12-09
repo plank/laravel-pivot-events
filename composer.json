@@ -1,5 +1,5 @@
 {
-    "name": "mikebronner/laravel-pivot-events",
+    "name": "plank/laravel-pivot-events",
     "description": "This package introduces new eloquent events for sync(), attach(), detach() or updateExistingPivot() methods on BelongsToMany relation.",
     "keywords": [
         "laravel BelongsToMany events",
@@ -8,17 +8,29 @@
         "laravel sync events",
         "eloquent events"
     ],
-    "homepage": "https://github.com/mikebronner/laravel-pivot-events",
+    "homepage": "https://github.com/plank/laravel-pivot-events",
     "support": {
-        "issues": "https://github.com/mikebronner/laravel-pivot-events/issues",
-        "source": "https://github.com/mikebronner/laravel-pivot-events"
+        "issues": "https://github.com/plank/laravel-pivot-events/issues",
+        "source": "https://github.com/plank/laravel-pivot-events"
     },
     "license": "MIT",
     "authors": [
         {
+            "name": "Filip Horvat",
+            "email": "filip.horvat@am2studio.hr",
+            "homepage": "http://am2studio.hr",
+            "role": "Developer"
+        },
+        {
             "name": "Mike Bronner",
             "email": "hello@genealabs.com",
             "homepage": "https://genealabs.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Kurt Friars",
+            "email": "kurt.friars@plank.co",
+            "homepage": "https://plank.co",
             "role": "Developer"
         }
     ],
@@ -29,16 +41,17 @@
     "require-dev": {
         "orchestra/testbench": "^9.0|^10.0",
         "phpunit/phpunit": "^10.5|^11.0",
-        "symfony/thanks": "^1.0"
+        "symfony/thanks": "^1.0",
+        "laravel/pint": "^1.26"
     },
     "autoload": {
         "psr-4": {
-            "GeneaLabs\\LaravelPivotEvents\\": "src"
+            "Plank\\LaravelPivotEvents\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "GeneaLabs\\LaravelPivotEvents\\Tests\\": "tests/"
+            "Plank\\LaravelPivotEvents\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "dev",

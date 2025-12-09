@@ -1,17 +1,19 @@
-<?php namespace GeneaLabs\LaravelPivotEvents\Tests;
+<?php
 
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Tag;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Post;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Role;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\User;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Video;
-use GeneaLabs\LaravelPivotEvents\Tests\Models\Seller;
+namespace Plank\LaravelPivotEvents\Tests;
+
+use Plank\LaravelPivotEvents\Tests\Models\Post;
+use Plank\LaravelPivotEvents\Tests\Models\Role;
+use Plank\LaravelPivotEvents\Tests\Models\Seller;
+use Plank\LaravelPivotEvents\Tests\Models\Tag;
+use Plank\LaravelPivotEvents\Tests\Models\User;
+use Plank\LaravelPivotEvents\Tests\Models\Video;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     public static $events = [];
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -40,8 +42,8 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         $this->assertEquals(0, \DB::table('taggables')->count());
 
         \Event::listen('eloquent.*', function ($eventName, array $data) {
-            if (0 !== strpos($eventName, 'eloquent.retrieved')
-                && array_key_exists("model", $data)
+            if (strpos($eventName, 'eloquent.retrieved') !== 0
+                && array_key_exists('model', $data)
             ) {
                 self::$events[] = [0 => $data['model'], 'name' => $eventName, 'model' => $data['model'], 'relation' => $data['relation'], 'pivotIds' => $data['pivotIds'], 'pivotIdsAttributes' => $data['pivotIdsAttributes']];
             }
@@ -53,9 +55,9 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
     }
 

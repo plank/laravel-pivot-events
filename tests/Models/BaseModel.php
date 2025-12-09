@@ -1,9 +1,7 @@
 <?php
 
-namespace GeneaLabs\LaravelPivotEvents\Tests\Models;
+namespace Plank\LaravelPivotEvents\Tests\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BaseModel extends Model
-{
-}
+class BaseModel extends Model {}

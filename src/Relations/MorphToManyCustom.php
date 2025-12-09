@@ -1,7 +1,9 @@
-<?php namespace GeneaLabs\LaravelPivotEvents\Relations;
+<?php
+
+namespace Plank\LaravelPivotEvents\Relations;
 
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use GeneaLabs\LaravelPivotEvents\Traits\FiresPivotEventsTrait;
+use Plank\LaravelPivotEvents\Traits\FiresPivotEventsTrait;
 
 class MorphToManyCustom extends MorphToMany
 {

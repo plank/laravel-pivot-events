@@ -1,32 +1,35 @@
 # Laravel Pivot Events
+
 This package introduces new eloquent events for sync(), attach(), detach(), or
 updateExistingPivot() methods on BelongsToMany and MorphToMany relationships.
 
-This package is a fork of [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot)
-created mainly to address compatibility issues with
-[Laravel Telescope](https://github.com/laravel/telescope) and
-[Model Caching for Laravel](https://github.com/GeneaLabs/laravel-model-caching).
+This package is a fork of [Mike Bronner's Fork](https://github.com/mikebronner/laravel-pivot-events)
+of [fico7489/laravel-pivot](https://github.com/fico7489/laravel-pivot).
+
+This fork avoids overiding the framework's fireEvent method for no good reason.
 
 ## Sponsors
+
 We thank the following sponsors for their generosity. Please take a moment to check them out:
 
-- [LIX](https://lix-it.com)
+-   [LIX](https://lix-it.com)
 
 ## Requirements
-- Laravel 8.0+
-- PHP 7.3+
+
+-   Laravel 8.0+
+-   PHP 7.3+
 
 ## Installation
-1.Install package with composer:
-    ```
-    composer require "mikebronner/laravel-pivot-events:*"
-    ```
 
-2. Use `GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait` trait in your base
+1.Install package with composer:
+`composer require "plank/laravel-pivot-events:*"`
+
+2. Use `Plank\LaravelPivotEvents\Traits\PivotEventTrait` trait in your base
    model or only in particular models.
+
     ```php
     // ...
-    use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
+    use Plank\LaravelPivotEvents\Traits\PivotEventTrait;
     use Illuminate\Database\Eloquent\Model;
 
     abstract class BaseModel extends Model
@@ -38,15 +41,17 @@ We thank the following sponsors for their generosity. Please take a moment to ch
 
 ## New Eloquent Events
 
-You can check all eloquent events here:  https://laravel.com/docs/5.8/eloquent#events)
+You can check all eloquent events here: https://laravel.com/docs/5.8/eloquent#events)
 
 New events are :
-- `pivotSyncing`, `pivotSynced`
-- `pivotAttaching`, `pivotAttached`
-- `pivotDetaching`, `pivotDetached`
-- `pivotUpdating`, `pivotUpdated`
+
+-   `pivotSyncing`, `pivotSynced`
+-   `pivotAttaching`, `pivotAttached`
+-   `pivotDetaching`, `pivotDetached`
+-   `pivotUpdating`, `pivotUpdated`
 
 The easiest way to catch events is using methods in your model's `boot()` method:
+
 ```php
 public static function boot()
 {
@@ -91,6 +96,7 @@ public static function boot()
 ```
 
 You can also catch them using dedicated Event Listeners:
+
 ```php
 \Event::listen('eloquent.*', function ($eventName, array $data) {
     echo $eventName;  //e.g. 'eloquent.pivotAttached'
@@ -98,9 +104,11 @@ You can also catch them using dedicated Event Listeners:
 ```
 
 ## Supported Relationships
-**BelongsToMany**  and **MorphToMany**
+
+**BelongsToMany** and **MorphToMany**
 
 ## Which events are dispatched and when they are dispatched
+
 Four BelongsToMany methods dispatches events from this package :
 
 **attach()**
@@ -118,7 +126,7 @@ You can change only one row in the pivot table with updateExistingPivot.
 **sync()**
 Dispatches **one** **pivotSyncing** and **one** **pivotSynced** event.
 Whether a row was attached/detached/updated during sync only **one** event is dispatched for all rows but in that case, you can see all the attached/detached/updated rows in the $changes variables.
-E.g. *How does sync work:* The sync first detaches all associations and then attaches or updates new entries one by one.
+E.g. _How does sync work:_ The sync first detaches all associations and then attaches or updates new entries one by one.
 
 ## Usage
 
@@ -182,13 +190,16 @@ class Role extends Model
 For attach() or detach() one event is dispatched for both pivot ids.
 
 #### Attaching With Primary Key
+
 Running this code
+
 ```php
 $user = User::first();
 $user->roles()->attach(1);
 ```
 
 You will see this output
+
 ```
 pivotAttached
 App\Models\User
@@ -198,12 +209,16 @@ roles
 ```
 
 #### Attaching with array
+
 Running this code
+
 ```
 $user = User::first();
 $user->roles()->attach([1]);
 ```
+
 You will see this output
+
 ```
 pivotAttached
 App\Models\User
@@ -213,13 +228,16 @@ roles
 ```
 
 #### Attaching with model
+
 Running this code
+
 ```php
 $user = User::first();
 $user->roles()->attach(Role::first());
 ```
 
 You will see this output
+
 ```
 pivotAttached
 App\Models\User
@@ -229,13 +247,16 @@ roles
 ```
 
 #### Attaching with collection
+
 Running this code
+
 ```php
 $user = User::first();
 $user->roles()->attach(Role::get());
 ```
 
 You will see this output
+
 ```
 pivotAttached
 App\Models\User
@@ -245,12 +266,16 @@ roles
 ```
 
 #### Attaching with array (id => attributes)
+
 Running this code
+
 ```
 $user = User::first();
 $user->roles()->attach([1, 2 => ['attribute' => 'test']], ['attribute2' => 'test2']);
 ```
+
 You will see this output
+
 ```
 pivotAttached
 App\Models\User
@@ -260,7 +285,9 @@ roles
 ```
 
 ### Syncing
+
 Running this code
+
 ```php
 $user = User::first();
 $user->roles()->attach([
@@ -274,6 +301,7 @@ $user->roles()->attach([
 ```
 
 You will see this output
+
 ```
 pivotSynced
 App\Models\User
@@ -292,12 +320,16 @@ roles
 ```
 
 ### Detaching
+
 Running this code
+
 ```
 $user = User::first();
 $user->roles()->detach([1, 2]);
 ```
+
 You will see this output
+
 ```
 pivotAttached
 App\Models\User
@@ -308,11 +340,14 @@ roles
 ### Updating
 
 Running this code
+
 ```
 $user = User::first();
 $user->roles()->updateExistingPivot(1, ['attribute' => 'test']);
 ```
+
 You will see this output
+
 ```
 pivotUpdated
 App\Models\User
