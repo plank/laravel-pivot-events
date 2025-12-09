@@ -97,7 +97,7 @@ trait FiresPivotEventsTrait
      * @param  array  $attributes
      * @return array
      */
-    private function getIdsWithAttributes($id, $attributes = [])
+    protected function getIdsWithAttributes($id, $attributes = [])
     {
         $ids = [];
 
