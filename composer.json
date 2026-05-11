@@ -35,13 +35,13 @@
         }
     ],
     "require": {
-        "illuminate/database": "^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0"
+        "php": "^8.3",
+        "illuminate/database": "^13.0",
+        "illuminate/support": "^13.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0|^10.0",
-        "phpunit/phpunit": "^10.5|^11.0",
-        "symfony/thanks": "^1.0",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^3.0",
         "laravel/pint": "^1.26"
     },
     "autoload": {
@@ -58,7 +58,7 @@
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
-            "symfony/thanks": true
+            "pestphp/pest-plugin": true
         }
     }
 }

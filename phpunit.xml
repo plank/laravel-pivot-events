@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd"
     backupGlobals="false"
     colors="true"
     processIsolation="false"
@@ -14,7 +14,7 @@
         <ini name="error_reporting" value="-1"/>
     </php>
     <testsuites>
-        <testsuite name="Remember Upload Service Testsuit">
+        <testsuite name="Tests">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>
@@ -22,9 +22,5 @@
         <include>
             <directory>./src</directory>
         </include>
-        <exclude>
-            <directory>./tests</directory>
-            <directory>./vendor</directory>
-        </exclude>
     </source>
 </phpunit>
