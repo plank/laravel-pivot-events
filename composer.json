@@ -35,12 +35,12 @@
         }
     ],
     "require": {
-        "php": "^8.3",
-        "illuminate/database": "^13.0",
-        "illuminate/support": "^13.0"
+        "php": "^8.2",
+        "illuminate/database": "^11.0",
+        "illuminate/support": "^11.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^11.0",
+        "orchestra/testbench": "^9.0",
         "pestphp/pest": "^3.0",
         "laravel/pint": "^1.26"
     },
