@@ -6,23 +6,14 @@ trait PivotEventTrait
 {
     use ExtendRelationsTrait;
 
-    /**
-     * Get the observable event names.
-     *
-     * @return array
-     */
-    public function getObservableEvents()
+    public function initializePivotEventTrait(): void
     {
-        return array_merge(
-            parent::getObservableEvents(),
-            [
-                'pivotSyncing', 'pivotSynced',
-                'pivotAttaching', 'pivotAttached',
-                'pivotDetaching', 'pivotDetached',
-                'pivotUpdating', 'pivotUpdated',
-            ],
-            $this->observables
-        );
+        $this->addObservableEvents([
+            'pivotSyncing', 'pivotSynced',
+            'pivotAttaching', 'pivotAttached',
+            'pivotDetaching', 'pivotDetached',
+            'pivotUpdating', 'pivotUpdated',
+        ]);
     }
 
     public static function pivotSyncing($callback, $priority = 0)
