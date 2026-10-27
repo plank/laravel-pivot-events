@@ -6,6 +6,7 @@ use Illuminate\Contracts\Broadcasting\Factory as BroadcastingFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection as BaseCollection;
 
 trait FiresPivotEventsTrait
 {
@@ -22,12 +23,16 @@ trait FiresPivotEventsTrait
             return false;
         }
 
+        [, $idsAttributes] = $this->getIdsWithAttributes($ids);
+
         $parentResult = [];
         $this->parent->withoutEvents(function () use ($ids, $detaching, &$parentResult) {
             $parentResult = parent::sync($ids, $detaching);
         });
 
-        $this->parent->firePivotEvent('pivotSynced', false, $this->getRelationName(), $parentResult);
+        $writtenIds = array_merge($parentResult['attached'] ?? [], $parentResult['updated'] ?? []);
+
+        $this->parent->firePivotEvent('pivotSynced', false, $this->getRelationName(), $parentResult, Arr::only($idsAttributes, $writtenIds));
 
         return $parentResult;
     }
@@ -107,6 +112,8 @@ trait FiresPivotEventsTrait
             foreach ($id as $model) {
                 $ids[$model->getKey()] = $attributes;
             }
+        } elseif ($id instanceof BaseCollection) {
+            return $this->getIdsWithAttributes($id->all(), $attributes);
         } elseif (is_array($id)) {
             foreach ($id as $key => $attributesArray) {
                 if (is_array($attributesArray)) {
