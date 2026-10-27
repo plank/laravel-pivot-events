@@ -61,7 +61,7 @@ public static function boot()
         //
     });
 
-    static::pivotSynced(function ($model, $relationName, $changes) {
+    static::pivotSynced(function ($model, $relationName, $changes, $pivotIdsAttributes) {
         //
     });
 
@@ -126,6 +126,7 @@ You can change only one row in the pivot table with updateExistingPivot.
 **sync()**
 Dispatches **one** **pivotSyncing** and **one** **pivotSynced** event.
 Whether a row was attached/detached/updated during sync only **one** event is dispatched for all rows but in that case, you can see all the attached/detached/updated rows in the $changes variables.
+The $pivotIdsAttributes variable holds the pivot attributes, keyed by id, of the rows that were attached or updated. Detached rows are not included.
 E.g. _How does sync work:_ The sync first detaches all associations and then attaches or updates new entries one by one.
 
 ## Usage

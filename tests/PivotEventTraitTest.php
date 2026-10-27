@@ -463,6 +463,81 @@ test('polymorphic sync collection', function () {
     ]);
 });
 
+// Sync payload tests
+
+test('sync reports the pivot attributes of attached rows', function () {
+    $user = User::find(1);
+
+    startListening();
+    $user->roles()->sync([1 => ['value' => 123], 2 => ['value' => 456]]);
+
+    expect(events()[1]['pivotIdsAttributes'])->toEqual([
+        1 => ['value' => 123],
+        2 => ['value' => 456],
+    ]);
+});
+
+test('sync reports the pivot attributes of updated rows', function () {
+    $user = User::find(1);
+    $user->roles()->attach(1, ['value' => 123]);
+
+    startListening();
+    $user->roles()->sync([1 => ['value' => 456]]);
+
+    expect(events()[1]['pivotIds']['updated'])->toBe([1]);
+    expect(events()[1]['pivotIdsAttributes'])->toEqual([1 => ['value' => 456]]);
+});
+
+test('sync does not report the pivot attributes of detached rows', function () {
+    $user = User::find(1);
+    $user->roles()->attach([1 => ['value' => 123], 2 => ['value' => 456]]);
+
+    startListening();
+    $user->roles()->sync([3 => ['value' => 789]]);
+
+    expect(events()[1]['pivotIds']['detached'])->toBe([1, 2]);
+    expect(events()[1]['pivotIdsAttributes'])->toEqual([3 => ['value' => 789]]);
+});
+
+test('sync reports empty pivot attributes when the ids carry none', function () {
+    $user = User::find(1);
+
+    startListening();
+    $user->roles()->sync([1, 2]);
+
+    expect(events()[1]['pivotIdsAttributes'])->toEqual([1 => [], 2 => []]);
+});
+
+test('syncWithPivotValues reports the pivot attributes of attached rows', function () {
+    $user = User::find(1);
+
+    startListening();
+    $user->roles()->syncWithPivotValues([1, 2], ['value' => 123]);
+
+    expect(events()[1]['pivotIdsAttributes'])->toEqual([
+        1 => ['value' => 123],
+        2 => ['value' => 123],
+    ]);
+});
+
+test('polymorphic sync reports the pivot attributes of attached rows', function () {
+    $post = Post::find(1);
+
+    startListening();
+    $post->tags()->sync([1 => ['value' => 123]]);
+
+    expect(events()[1]['pivotIdsAttributes'])->toEqual([1 => ['value' => 123]]);
+});
+
+test('attach accepts a collection of ids', function () {
+    $user = User::find(1);
+
+    startListening();
+    $user->roles()->attach(collect([1, 2]), ['value' => 123]);
+
+    checkVariables(0, [1, 2], [1 => ['value' => 123], 2 => ['value' => 123]]);
+});
+
 // Non-pivot event tests
 
 test('standard update does not fire pivot events', function () {
